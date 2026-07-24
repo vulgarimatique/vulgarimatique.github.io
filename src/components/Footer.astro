@@ -1,0 +1,38 @@
+---
+import Icon from "./Icon.astro";
+import site from "../data/site.json";
+
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href={path()}>Vulgarimatique<span aria-hidden="true">.</span></a>
+      <p>Rendre l’informatique accessible à toutes et à tous, avec clarté, pédagogie et exigence.</p>
+    </div>
+    <div>
+      <h2>Explorer</h2>
+      <a href={path("glossaire/")}>Glossaire</a>
+      <a href={path("infographies/")}>Infographies</a>
+      <a href={path("podcasts/")}>Podcasts</a>
+    </div>
+    <div>
+      <h2>À propos</h2>
+      <a href={path("a-propos/")}>Notre approche</a>
+      <a href={path("mentions-legales/")}>Mentions légales</a>
+      <a href={path("accessibilite/")}>Accessibilité</a>
+    </div>
+    <div>
+      <h2>Ressources</h2>
+      <a href={path("rss.xml")} class="inline-link">Flux RSS <Icon name="rss" size={15} /></a>
+      {site.email && <a href={`mailto:${site.email}`}>Contact</a>}
+      <a href={path("admin/")}>Administration</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {new Date().getFullYear()} Vulgarimatique — Tous droits réservés.</span>
+    <span>Des mots clairs pour un monde numérique.</span>
+  </div>
+</footer>

@@ -1,0 +1,28 @@
+---
+import ads from "../data/ads.json";
+
+interface Props {
+  slot: "glossary" | "article";
+}
+
+const { slot } = Astro.props;
+const slotId = slot === "glossary" ? ads.slots.glossarySlotId : ads.slots.articleSlotId;
+---
+
+<aside class:list={["ad-slot", { "ad-slot-live": ads.enabled && slotId }]} aria-label="Publicité">
+  <strong>Publicité</strong>
+  {ads.enabled && slotId ? (
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client={ads.clientId}
+      data-ad-slot={slotId}
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    />
+  ) : (
+    <span>Espace réservé à nos partenaires</span>
+  )}
+</aside>
+
+{ads.enabled && slotId && <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>}

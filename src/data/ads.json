@@ -1,0 +1,10 @@
+{
+  "enabled": false,
+  "provider": "adsense",
+  "clientId": "",
+  "slots": {
+    "glossaryAfter": 10,
+    "glossarySlotId": "",
+    "articleSlotId": ""
+  }
+}

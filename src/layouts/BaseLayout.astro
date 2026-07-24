@@ -1,0 +1,61 @@
+---
+import "@fontsource-variable/archivo";
+import "@fontsource-variable/inter";
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import ads from "../data/ads.json";
+import site from "../data/site.json";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  image,
+  noindex = false
+} = Astro.props;
+
+const fullTitle = title === site.title ? title : `${title} — ${site.title}`;
+const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url.origin);
+const imageUrl = image ? new URL(image.replace(/^\//, ""), Astro.site || Astro.url.origin) : undefined;
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fbfaf6" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="Vulgarimatique" href={`${base}rss.xml`} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    <meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
+    <title>{fullTitle}</title>
+    {ads.enabled && ads.clientId && (
+      <script is:inline async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ads.clientId}`} crossorigin="anonymous"></script>
+    )}
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <Header />
+    <main id="contenu">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,49 @@
+name: Déployer sur GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BASE_PATH: ${{ endsWith(github.event.repository.name, '.github.io') && '/' || format('/{0}', github.event.repository.name) }}
+      SITE_URL: ${{ endsWith(github.event.repository.name, '.github.io') && format('https://{0}.github.io', github.repository_owner) || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+      DECAP_OAUTH_URL: ${{ vars.DECAP_OAUTH_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Configurer l’administration
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; const p='public/admin/config.yml'; let s=fs.readFileSync(p,'utf8').replace('__GITHUB_REPOSITORY__', process.env.GITHUB_REPOSITORY); if(process.env.DECAP_OAUTH_URL){s=s.replace('__DECAP_OAUTH_URL__', process.env.DECAP_OAUTH_URL)} fs.writeFileSync(p,s)"
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Déployer
+        id: deployment
+        uses: actions/deploy-pages@v4

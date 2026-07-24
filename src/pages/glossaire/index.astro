@@ -1,0 +1,113 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import ads from "../../data/ads.json";
+
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
+const notions = (await getCollection("notions")).sort((a, b) => a.data.title.localeCompare(b.data.title, "fr"));
+const categories = ["Toutes", ...new Set(notions.map((item) => item.data.category))];
+const letters = [...new Set(notions.map((item) => item.data.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "")[0].toUpperCase()))];
+---
+
+<BaseLayout title="Glossaire" description="Le glossaire informatique qui parle normalement : des définitions simples, classées et recherchables.">
+  <section class="page-hero">
+    <div class="container page-hero-grid">
+      <div>
+        <h1>Le glossaire informatique qui parle normalement.</h1>
+        <p>Cherchez un mot, choisissez un univers ou laissez-vous guider.</p>
+      </div>
+      <img class="page-illustration" src={path("assets/hero-network.png")} alt="" width="1536" height="1152" />
+    </div>
+  </section>
+
+  <section class="glossary-tools" aria-label="Filtres du glossaire">
+    <div class="container">
+      <div class="search-wrap">
+        <Icon name="search" />
+        <label class="sr-only" for="glossary-search">Rechercher une notion</label>
+        <input id="glossary-search" class="search-input" type="search" placeholder="Rechercher une notion…" autocomplete="off" />
+      </div>
+      <div class="filter-rail" role="group" aria-label="Filtrer par catégorie">
+        {categories.map((category, index) => (
+          <button class:list={["filter-button", { active: index === 0 }]} type="button" data-category={category} aria-pressed={index === 0 ? "true" : "false"}>
+            {category}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 90px">
+    <nav class="alpha-rail" aria-label="Accès alphabétique">
+      <strong>Aller à :</strong>
+      {letters.map((letter) => <a class="alpha-link" href={`#lettre-${letter}`}>{letter}</a>)}
+    </nav>
+
+    <div class="glossary-table" id="glossary-list">
+      <div class="glossary-head" aria-hidden="true">
+        <span>Notion</span><span>Définition</span><span>Catégorie</span><span></span>
+      </div>
+      {notions.map((item, index) => (
+        <>
+          {index === ads.slots.glossaryAfter && <AdSlot slot="glossary" />}
+          <a
+            class="glossary-row"
+            href={path(`glossaire/${item.id}/`)}
+            data-title={`${item.data.title} ${item.data.aliases.join(" ")}`.toLocaleLowerCase("fr")}
+            data-category={item.data.category}
+            id={`lettre-${item.data.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "")[0].toUpperCase()}`}
+          >
+            <h2>{item.data.title}</h2>
+            <p class="glossary-summary">{item.data.summary}</p>
+            <p class="glossary-category">{item.data.category}</p>
+            <Icon name="arrow" size={18} />
+          </a>
+        </>
+      ))}
+    </div>
+    <div class="empty-state" id="glossary-empty">
+      <h2>Aucune notion trouvée</h2>
+      <p>Essayez un mot plus court ou revenez à toutes les catégories.</p>
+    </div>
+  </section>
+
+  <script>
+    const search = document.querySelector<HTMLInputElement>("#glossary-search");
+    const rows = [...document.querySelectorAll<HTMLElement>(".glossary-row")];
+    const filters = [...document.querySelectorAll<HTMLButtonElement>(".filter-button")];
+    const empty = document.querySelector<HTMLElement>("#glossary-empty");
+    let activeCategory = "Toutes";
+
+    const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr");
+    const update = () => {
+      const query = normalize(search?.value || "");
+      let visible = 0;
+      rows.forEach((row) => {
+        const title = normalize(row.dataset.title || "");
+        const category = row.dataset.category || "";
+        const show = (!query || title.includes(query)) && (activeCategory === "Toutes" || category === activeCategory);
+        row.hidden = !show;
+        if (show) visible += 1;
+      });
+      empty?.classList.toggle("visible", visible === 0);
+    };
+
+    search?.addEventListener("input", update);
+    filters.forEach((button) => button.addEventListener("click", () => {
+      activeCategory = button.dataset.category || "Toutes";
+      filters.forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+      update();
+    }));
+
+    const requested = new URLSearchParams(window.location.search).get("categorie");
+    const requestedButton = filters.find((button) => button.dataset.category === requested);
+    requestedButton?.click();
+  </script>
+</BaseLayout>

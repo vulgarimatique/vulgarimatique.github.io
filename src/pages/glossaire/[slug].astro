@@ -1,0 +1,101 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+import AdSlot from "../../components/AdSlot.astro";
+
+export async function getStaticPaths() {
+  const notions = await getCollection("notions");
+  return notions.map((entry) => ({ params: { slug: entry.id }, props: { entry, notions } }));
+}
+
+const { entry, notions } = Astro.props;
+const { Content } = await render(entry);
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
+const related = notions.filter((item: typeof entry) => item.id !== entry.id && item.data.category === entry.data.category).slice(0, 3);
+const detailImage = entry.data.title === "Kubernetes" ? path("assets/kubernetes-orchestration.png") : path("assets/hero-network.png");
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  name: entry.data.title,
+  description: entry.data.summary,
+  inDefinedTermSet: new URL(path("glossaire/"), Astro.site || Astro.url.origin).toString()
+};
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.summary} image={entry.data.infographic}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <section class="detail-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Fil d’Ariane">
+        <a href={path("glossaire/")}>Glossaire</a><span>/</span><span>{entry.data.category}</span><span>/</span><span>{entry.data.title}</span>
+      </nav>
+      <div class="detail-hero-grid">
+        <div>
+          <h1>{entry.data.title}</h1>
+          <p class="detail-lead">{entry.data.summary}</p>
+          <div class="detail-actions">
+            {entry.data.audio && (
+              <audio controls preload="metadata">
+                <source src={path(entry.data.audio.replace(/^\//, ""))} type="audio/mp4" />
+                Votre navigateur ne peut pas lire cet audio.
+              </audio>
+            )}
+            {entry.data.infographic && (
+              <a class="button button-secondary" href="#infographie"><Icon name="chart" size={18} /> Voir l’infographie</a>
+            )}
+            <button class="button button-secondary share-button" type="button" aria-label="Partager cette page"><Icon name="share" size={18} /> Partager</button>
+          </div>
+        </div>
+        <img class="detail-image" src={detailImage} alt="" width="1536" height="1024" />
+      </div>
+    </div>
+  </section>
+
+  <div class="container article-shell">
+    <article class="prose">
+      <Content />
+      {entry.data.infographic && (
+        <section id="infographie">
+          <h2>L’infographie</h2>
+          <img
+            class="infographic-full"
+            src={path(entry.data.infographic.replace(/^\//, ""))}
+            alt={`Infographie expliquant ${entry.data.title}`}
+            loading="lazy"
+          />
+        </section>
+      )}
+      <AdSlot slot="article" />
+    </article>
+    <aside class="article-aside">
+      <h2>Pour continuer à comprendre</h2>
+      <div class="related-list">
+        {related.map((item: typeof entry) => (
+          <a class="related-link" href={path(`glossaire/${item.id}/`)}>
+            <strong>{item.data.title}</strong>
+            <span>{item.data.summary}</span>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    document.querySelector<HTMLButtonElement>(".share-button")?.addEventListener("click", async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      if (navigator.share) {
+        await navigator.share({ title: document.title, url: window.location.href });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        const previous = button.lastChild?.textContent;
+        if (button.lastChild) button.lastChild.textContent = " Lien copié";
+        window.setTimeout(() => {
+          if (button.lastChild) button.lastChild.textContent = previous || " Partager";
+        }, 1800);
+      }
+    });
+  </script>
+</BaseLayout>

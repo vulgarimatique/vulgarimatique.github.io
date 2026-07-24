@@ -1,0 +1,101 @@
+locale: fr
+backend:
+  name: github
+  repo: __GITHUB_REPOSITORY__
+  branch: main
+  base_url: __DECAP_OAUTH_URL__
+  squash_merges: true
+
+local_backend: true
+publish_mode: editorial_workflow
+media_folder: public/media/uploads
+public_folder: /media/uploads
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  - name: notions
+    label: Notions
+    label_singular: Notion
+    folder: src/content/notions
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    summary: "{{title}} — {{category}}"
+    sortable_fields: [title, category, publishedAt]
+    view_filters:
+      - label: À la une
+        field: featured
+        pattern: true
+      - label: Avec podcast
+        field: audio
+        pattern: ".+"
+      - label: Avec infographie
+        field: infographic
+        pattern: ".+"
+    fields:
+      - { label: Titre, name: title, widget: string }
+      - { label: Définition courte, name: summary, widget: text, hint: "L’analogie ou la définition visible dans les listes." }
+      - label: Catégorie
+        name: category
+        widget: select
+        options:
+          - Réseau & web
+          - Données & IA
+          - Sécurité
+          - Développement & outils
+          - Cloud, applis & architectures
+          - Matériel & systèmes
+          - Langages & formats
+      - { label: Identifiant source, name: sourceId, widget: string, required: false }
+      - { label: Mettre à la une, name: featured, widget: boolean, default: false }
+      - { label: Date de publication, name: publishedAt, widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+      - { label: Alias de recherche, name: aliases, widget: list, required: false, default: [] }
+      - { label: Podcast, name: audio, widget: file, required: false, media_folder: /public/media/audio, public_folder: /media/audio }
+      - { label: Durée du podcast, name: audioDuration, widget: string, required: false, hint: "Exemple : 1:37" }
+      - { label: Infographie, name: infographic, widget: image, required: false, media_folder: /public/media/infographics, public_folder: /media/infographics }
+      - label: Orientation de l’infographie
+        name: infographicOrientation
+        widget: select
+        required: false
+        options:
+          - { label: Verticale, value: vertical }
+          - { label: Horizontale, value: horizontal }
+      - { label: Explication détaillée, name: body, widget: markdown }
+
+  - name: configuration
+    label: Configuration
+    files:
+      - name: site
+        label: Informations du site
+        file: src/data/site.json
+        fields:
+          - { label: Nom, name: title, widget: string }
+          - { label: Description, name: description, widget: text }
+          - { label: Adresse e-mail, name: email, widget: string, required: false }
+          - { label: URL de la newsletter, name: newsletterUrl, widget: string, required: false }
+          - label: Réseaux sociaux
+            name: social
+            widget: object
+            fields:
+              - { label: GitHub, name: github, widget: string, required: false }
+              - { label: LinkedIn, name: linkedin, widget: string, required: false }
+              - { label: Mastodon, name: mastodon, widget: string, required: false }
+      - name: publicites
+        label: Publicités
+        file: src/data/ads.json
+        fields:
+          - { label: Activer les publicités, name: enabled, widget: boolean, default: false }
+          - { label: Fournisseur, name: provider, widget: select, options: [adsense] }
+          - { label: Identifiant client AdSense, name: clientId, widget: string, required: false, hint: "Format : ca-pub-…" }
+          - label: Emplacements
+            name: slots
+            widget: object
+            fields:
+              - { label: Position dans le glossaire, name: glossaryAfter, widget: number, value_type: int, min: 1 }
+              - { label: Identifiant du bloc glossaire, name: glossarySlotId, widget: string, required: false }
+              - { label: Identifiant du bloc article, name: articleSlotId, widget: string, required: false }

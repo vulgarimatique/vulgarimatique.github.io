@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+---
+
+<BaseLayout title="Page introuvable" noindex={true}>
+  <section class="container simple-page">
+    <h1>Cette notion nous échappe.</h1>
+    <p>La page demandée n’existe pas ou a changé d’adresse.</p>
+    <a class="button button-primary" href={`${base}glossaire/`}>Explorer le glossaire</a>
+  </section>
+</BaseLayout>

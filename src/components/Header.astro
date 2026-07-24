@@ -1,0 +1,42 @@
+---
+import Icon from "./Icon.astro";
+
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+const currentPath = Astro.url.pathname;
+const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
+const nav = [
+  { label: "Accueil", href: path(), match: (p: string) => p === base || p === base.slice(0, -1) },
+  { label: "Glossaire", href: path("glossaire/"), match: (p: string) => p.includes("/glossaire") },
+  { label: "Infographies", href: path("infographies/"), match: (p: string) => p.includes("/infographies") },
+  { label: "Podcasts", href: path("podcasts/"), match: (p: string) => p.includes("/podcasts") }
+];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href={path()} aria-label="Vulgarimatique — Accueil">
+      Vulgarimatique<span aria-hidden="true">.</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Navigation principale">
+      {nav.map((item) => (
+        <a class:list={["nav-link", { active: item.match(currentPath) }]} href={item.href} aria-current={item.match(currentPath) ? "page" : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <a class="button button-primary header-cta" href={path("glossaire/")}>
+      Explorer le glossaire <Icon name="arrow" size={18} />
+    </a>
+
+    <details class="mobile-nav">
+      <summary aria-label="Ouvrir le menu"><Icon name="menu" /></summary>
+      <div class="mobile-nav-panel">
+        {nav.map((item) => (
+          <a class:list={["mobile-nav-link", { active: item.match(currentPath) }]} href={item.href}>{item.label}</a>
+        ))}
+      </div>
+    </details>
+  </div>
+</header>

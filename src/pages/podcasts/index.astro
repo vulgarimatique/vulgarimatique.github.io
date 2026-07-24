@@ -1,0 +1,41 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
+const items = (await getCollection("notions"))
+  .filter((item) => item.data.audio)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, "fr"));
+---
+
+<BaseLayout title="Podcasts" description="Des explications audio courtes pour comprendre l’informatique sans jargon.">
+  <section class="page-hero">
+    <div class="container page-hero-grid">
+      <div>
+        <h1>Une notion, le temps d’une pause.</h1>
+        <p>Des épisodes courts à écouter pour se familiariser avec le vocabulaire du numérique.</p>
+      </div>
+      <img class="page-illustration" src={path("assets/kubernetes-orchestration.png")} alt="" width="1536" height="1024" />
+    </div>
+  </section>
+  <section class="section section-rule">
+    <div class="container podcast-page-list">
+      {items.map((item) => (
+        <article class="podcast-card">
+          <div class="podcast-card-header">
+            <span class="play-button"><Icon name="play" size={18} /></span>
+            <h2><a href={path(`glossaire/${item.id}/`)}>{item.data.title}</a></h2>
+            <span class="podcast-duration">{item.data.audioDuration}</span>
+          </div>
+          <p>{item.data.summary}</p>
+          <audio controls preload="none">
+            <source src={path(item.data.audio!.replace(/^\//, ""))} type="audio/mp4" />
+            Votre navigateur ne peut pas lire cet audio.
+          </audio>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
