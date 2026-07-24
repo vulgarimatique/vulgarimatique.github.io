@@ -24,7 +24,12 @@ Laisser ce processus ouvert, puis lancer le site avec `npm run dev`.
 
 ## Publication sur GitHub Pages
 
-1. Créer un dépôt GitHub et y pousser la branche `main`.
+Le site est prévu pour le compte GitHub `vulgarimatique` et doit être publié dans
+un dépôt nommé exactement `vulgarimatique.github.io`. Son adresse publique sera :
+
+<https://vulgarimatique.github.io>
+
+1. Créer le dépôt `vulgarimatique.github.io` et y pousser la branche `main`.
 2. Dans **Settings → Pages**, choisir **GitHub Actions** comme source.
 3. Configurer le proxy OAuth de Decap CMS.
 4. Ajouter son URL dans **Settings → Secrets and variables → Actions → Variables** sous le nom `DECAP_OAUTH_URL`.
