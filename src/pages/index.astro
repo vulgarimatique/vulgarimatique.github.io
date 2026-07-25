@@ -6,9 +6,30 @@ import Icon from "../components/Icon.astro";
 const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
 const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
 const notions = (await getCollection("notions")).sort((a, b) => a.data.title.localeCompare(b.data.title, "fr"));
-const featured = notions.filter((item) => item.data.featured).slice(0, 3);
-const infographics = notions.filter((item) => item.data.infographic).slice(0, 3);
-const podcasts = notions.filter((item) => item.data.audio).slice(0, 3);
+const findNotion = (id: string) => notions.find((item) => item.id === id);
+const featured = ["kubernetes", "chiffrement-encryption", "dns"]
+  .map(findNotion)
+  .filter((item): item is NonNullable<typeof item> => Boolean(item));
+const infographics = ["ip", "cpu-processeur", "chiffrement-encryption"]
+  .map(findNotion)
+  .filter((item): item is NonNullable<typeof item> => Boolean(item?.data.infographic));
+const podcasts = [
+  {
+    item: findNotion("cloud"),
+    title: "Qu’est-ce que le Cloud ?",
+    description: "Comprendre le cloud sans se perdre dans les nuages."
+  },
+  {
+    item: findNotion("http-https"),
+    title: "TCP/IP en quelques minutes",
+    description: "L’essentiel pour comprendre comment circule l’information."
+  },
+  {
+    item: findNotion("phishing"),
+    title: "Les bases de la cybersécurité",
+    description: "Menaces, parades et bons réflexes au quotidien."
+  }
+].filter((podcast): podcast is typeof podcast & { item: NonNullable<typeof podcast.item> } => Boolean(podcast.item));
 
 const categories = [
   { name: "Réseau & web", icon: "globe", text: "Internet, protocoles, adresse IP, DNS, HTTP…" },
@@ -37,7 +58,7 @@ const categories = [
     </div>
   </section>
 
-  <section class="section section-rule">
+  <section class="section section-rule" id="notions">
     <div class="container">
       <div class="section-heading">
         <h2>Notions à la une</h2>
@@ -47,18 +68,20 @@ const categories = [
         {featured.map((item, index) => (
           <a class="featured-item" href={path(`glossaire/${item.id}/`)}>
             <span class="icon-frame">
-              <Icon name={index === 0 ? "cloud" : index === 1 ? "lock" : "globe"} size={46} strokeWidth={1.4} />
+              <Icon name={index === 0 ? "kubernetes" : index === 1 ? "shield-lock" : "dns"} size={72} strokeWidth={1.35} />
             </span>
-            <h3>{item.data.title}</h3>
-            <p>{item.data.summary}</p>
-            <span class="text-link">Lire l’explication <Icon name="arrow" size={16} /></span>
+            <span class="featured-copy">
+              <h3>{item.data.title}</h3>
+              <p>{item.data.summary}</p>
+              <span class="text-link">Lire l’explication <Icon name="arrow" size={16} /></span>
+            </span>
           </a>
         ))}
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="categories">
     <div class="container">
       <div class="section-heading">
         <h2>Explorer par catégories</h2>
@@ -76,7 +99,7 @@ const categories = [
     </div>
   </section>
 
-  <section class="section section-rule">
+  <section class="section section-rule" id="medias">
     <div class="container">
       <div class="section-heading">
         <h2>Dernières infographies<br />et podcasts</h2>
@@ -91,21 +114,21 @@ const categories = [
               </span>
               <h3>{item.data.title}</h3>
               <p>{item.data.summary}</p>
-              <span class="text-link">Voir l’infographie <Icon name="arrow" size={15} /></span>
+              <span class="text-link"><Icon name="chart" size={15} /> Voir l’infographie <Icon name="arrow" size={15} /></span>
             </a>
           ))}
         </div>
-        <div>
-          <h3>Podcasts</h3>
+        <div class="podcast-column">
+          <h3 class="podcast-title">Podcasts</h3>
           <div class="podcast-list">
-            {podcasts.map((item) => (
-              <a class="podcast-row" href={path(`glossaire/${item.id}/`)}>
+            {podcasts.map((podcast) => (
+              <a class="podcast-row" href={path(`glossaire/${podcast.item.id}/`)}>
                 <span class="play-button"><Icon name="play" size={18} /></span>
                 <span>
-                  <h3>{item.data.title}</h3>
-                  <p>{item.data.summary}</p>
+                  <h3>{podcast.title}</h3>
+                  <p>{podcast.description}</p>
                 </span>
-                <span class="podcast-duration">{item.data.audioDuration}</span>
+                <span class="podcast-duration">{podcast.item.data.audioDuration}</span>
               </a>
             ))}
           </div>
@@ -114,15 +137,17 @@ const categories = [
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="flux-rss">
     <div class="container newsletter">
       <div>
         <h2>Restez curieux</h2>
-        <p>Retrouvez régulièrement de nouvelles explications claires, des infographies et des podcasts sélectionnés avec soin.</p>
-        <a class="button button-primary" href={path("rss.xml")}>Suivre le flux RSS <Icon name="rss" size={17} /></a>
+        <p>Recevez les nouvelles explications claires, les infographies et les podcasts sélectionnés avec soin dans votre lecteur préféré.</p>
+        <a class="button button-primary" href={path("rss.xml")}><Icon name="rss" size={17} /> Suivre le flux RSS <Icon name="arrow" size={17} /></a>
+        <span class="rss-note"><Icon name="mail" size={17} /> Un flux ouvert, sans inscription ni traçage.</span>
       </div>
       <div class="newsletter-visual" aria-hidden="true">
         <div class="envelope"><span class="envelope-dot"></span></div>
+        <Icon name="paper-plane" size={64} strokeWidth={1.35} />
       </div>
     </div>
   </section>

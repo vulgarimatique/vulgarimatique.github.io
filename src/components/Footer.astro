@@ -6,7 +6,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
 const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
 ---
 
-<footer class="site-footer">
+<footer class="site-footer" id="pied-de-page">
   <div class="container footer-grid">
     <div class="footer-brand">
       <a class="brand" href={path()}>Vulgarimatique<span aria-hidden="true">.</span></a>
@@ -17,22 +17,34 @@ const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
       <a href={path("glossaire/")}>Glossaire</a>
       <a href={path("infographies/")}>Infographies</a>
       <a href={path("podcasts/")}>Podcasts</a>
+      <a href={path("glossaire/")}>Toutes les notions</a>
     </div>
     <div>
       <h2>À propos</h2>
+      <a href={path("a-propos/")}>Qui sommes-nous ?</a>
       <a href={path("a-propos/")}>Notre approche</a>
       <a href={path("mentions-legales/")}>Mentions légales</a>
-      <a href={path("accessibilite/")}>Accessibilité</a>
     </div>
     <div>
       <h2>Ressources</h2>
+      <a href={path()}>Plan du site</a>
+      <a href={path("accessibilite/")}>Accessibilité</a>
       <a href={path("rss.xml")} class="inline-link">Flux RSS <Icon name="rss" size={15} /></a>
-      {site.email && <a href={`mailto:${site.email}`}>Contact</a>}
       <a href={path("admin/")}>Administration</a>
+    </div>
+    <div>
+      <h2>Suivez-nous</h2>
+      {site.social.github && <a href={site.social.github} rel="me">GitHub</a>}
+      {site.social.linkedin && <a href={site.social.linkedin} rel="me">LinkedIn</a>}
+      {site.social.mastodon && <a href={site.social.mastodon} rel="me">Mastodon</a>}
+      <div class="social-links">
+        {site.social.github && <a href={site.social.github} aria-label="GitHub"><Icon name="github" size={20} /></a>}
+        {site.social.linkedin && <a href={site.social.linkedin} aria-label="LinkedIn"><Icon name="linkedin" size={20} /></a>}
+      </div>
     </div>
   </div>
   <div class="container footer-bottom">
     <span>© {new Date().getFullYear()} Vulgarimatique — Tous droits réservés.</span>
-    <span>Des mots clairs pour un monde numérique.</span>
+    <span>Fait avec <span aria-label="amour">♥</span> et du code libre.</span>
   </div>
 </footer>
