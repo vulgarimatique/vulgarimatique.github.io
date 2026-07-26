@@ -1162,6 +1162,10 @@ h4,
   transition: background 160ms ease;
 }
 
+.glossary-row[id] {
+  scroll-margin-top: 168px;
+}
+
 .glossary-row:hover {
   background: var(--paper-strong);
 }
@@ -2094,6 +2098,10 @@ h4,
     grid-template-columns: 1fr 24px;
     gap: 8px 16px;
     padding: 22px 4px;
+  }
+
+  .glossary-row[id] {
+    scroll-margin-top: 20px;
   }
 
   .glossary-summary,
