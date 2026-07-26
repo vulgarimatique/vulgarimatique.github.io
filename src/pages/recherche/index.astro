@@ -1,0 +1,124 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
+const notions = (await getCollection("notions")).sort((a, b) => a.data.title.localeCompare(b.data.title, "fr"));
+---
+
+<BaseLayout title="Recherche" description="Recherchez dans toutes les explications, infographies et podcasts de Vulgarimatique.">
+  <section class="search-page-hero">
+    <div class="container search-page-heading">
+      <span class="search-page-icon"><Icon name="search" size={30} /></span>
+      <div>
+        <h1>Rechercher dans Vulgarimatique</h1>
+        <p>Titres, définitions, catégories, explications, infographies et podcasts : tout le contenu est parcouru.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-rule">
+    <div class="container">
+      <form class="search-page-form" action={path("recherche/")} method="get" role="search">
+        <label class="sr-only" for="content-search">Votre recherche</label>
+        <Icon name="search" size={22} />
+        <input id="content-search" name="q" type="search" placeholder="Ex. chiffrement, Internet, base de données…" autocomplete="off" />
+        <button class="button button-primary" type="submit">Rechercher</button>
+      </form>
+
+      <div class="search-summary" aria-live="polite">
+        <p id="search-status">Saisissez un mot pour parcourir tous les contenus.</p>
+      </div>
+
+      <div class="search-results" id="search-results">
+        {notions.map((item) => {
+          const formats = [
+            item.data.infographic ? "Infographie" : "",
+            item.data.audio ? "Podcast" : ""
+          ].filter(Boolean);
+          const searchText = [
+            item.data.title,
+            item.data.summary,
+            item.data.category,
+            ...item.data.aliases,
+            item.body || "",
+            ...formats
+          ].join(" ");
+          return (
+            <article
+              class="search-result"
+              data-search={searchText}
+              data-title={item.data.title}
+              hidden
+            >
+              <a href={path(`glossaire/${item.id}/`)}>
+                <div class="search-result-meta">
+                  <span>{item.data.category}</span>
+                  {formats.map((format) => <span>{format}</span>)}
+                </div>
+                <h2>{item.data.title}</h2>
+                <p>{item.data.summary}</p>
+                <span class="text-link">Lire l’explication <Icon name="arrow" size={16} /></span>
+              </a>
+            </article>
+          );
+        })}
+      </div>
+
+      <div class="search-empty" id="search-empty" hidden>
+        <span><Icon name="search" size={32} /></span>
+        <h2>Aucun résultat</h2>
+        <p>Essayez un terme plus court, un synonyme ou le nom d’une catégorie.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const form = document.querySelector<HTMLFormElement>(".search-page-form");
+    const input = document.querySelector<HTMLInputElement>("#content-search");
+    const results = [...document.querySelectorAll<HTMLElement>(".search-result")];
+    const status = document.querySelector<HTMLElement>("#search-status");
+    const empty = document.querySelector<HTMLElement>("#search-empty");
+    const normalize = (value: string) => value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLocaleLowerCase("fr");
+
+    const search = () => {
+      const query = (input?.value || "").trim();
+      const terms = normalize(query).split(/\s+/).filter(Boolean);
+      let count = 0;
+
+      results.forEach((result) => {
+        const haystack = normalize(result.dataset.search || "");
+        const matches = terms.length > 0 && terms.every((term) => haystack.includes(term));
+        result.hidden = !matches;
+        if (matches) count += 1;
+      });
+
+      if (!terms.length) {
+        if (status) status.textContent = "Saisissez un mot pour parcourir tous les contenus.";
+        if (empty) empty.hidden = true;
+        return;
+      }
+
+      if (status) status.textContent = `${count} résultat${count > 1 ? "s" : ""} pour « ${query} »`;
+      if (empty) empty.hidden = count !== 0;
+    };
+
+    form?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const params = new URLSearchParams();
+      if (input?.value.trim()) params.set("q", input.value.trim());
+      window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
+      search();
+    });
+    input?.addEventListener("input", search);
+
+    const initialQuery = new URLSearchParams(window.location.search).get("q") || "";
+    if (input) input.value = initialQuery;
+    search();
+  </script>
+</BaseLayout>

@@ -26,6 +26,13 @@ const nav = [
       ))}
     </nav>
 
+    <form class="header-search" action={path("recherche/")} method="get" role="search">
+      <label class="sr-only" for="header-search">Rechercher dans tous les contenus</label>
+      <Icon name="search" size={18} />
+      <input id="header-search" name="q" type="search" placeholder="Rechercher…" autocomplete="off" />
+      <button type="submit" aria-label="Lancer la recherche"><Icon name="arrow" size={16} /></button>
+    </form>
+
     <a class="button button-primary header-cta" href={path("glossaire/")}>
       Explorer le glossaire <Icon name="arrow" size={18} />
     </a>
@@ -33,6 +40,12 @@ const nav = [
     <details class="mobile-nav">
       <summary aria-label="Ouvrir le menu"><Icon name="menu" /></summary>
       <div class="mobile-nav-panel">
+        <form class="mobile-search" action={path("recherche/")} method="get" role="search">
+          <label class="sr-only" for="mobile-search">Rechercher dans tous les contenus</label>
+          <Icon name="search" size={18} />
+          <input id="mobile-search" name="q" type="search" placeholder="Rechercher…" autocomplete="off" />
+          <button type="submit" aria-label="Lancer la recherche"><Icon name="arrow" size={16} /></button>
+        </form>
         {nav.map((item) => (
           <a class:list={["mobile-nav-link", { active: item.match(currentPath) }]} href={item.href}>{item.label}</a>
         ))}
