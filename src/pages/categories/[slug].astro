@@ -1,0 +1,71 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+
+export async function getStaticPaths() {
+  const categories = await getCollection("categories");
+  return categories.map((category) => ({
+    params: { slug: category.id },
+    props: { category }
+  }));
+}
+
+const { category } = Astro.props;
+const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
+const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
+const notions = (await getCollection("notions"))
+  .filter((notion) => notion.data.category === category.data.name)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, "fr"));
+---
+
+<BaseLayout
+  title={category.data.name}
+  description={`${category.data.description} Découvrez toutes les notions Vulgarimatique de cette catégorie.`}
+>
+  <section class="category-page-hero">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Fil d’Ariane">
+        <a href={path("")}>Accueil</a><span>/</span><span>Catégories</span><span>/</span><span>{category.data.name}</span>
+      </nav>
+      <div class="category-page-heading">
+        <span class="category-page-icon">
+          <Icon name={category.data.icon} size={76} strokeWidth={1.25} />
+        </span>
+        <div>
+          <p class="category-page-count">{notions.length} notion{notions.length > 1 ? "s" : ""} à découvrir</p>
+          <h1>{category.data.name}</h1>
+          <p>{category.data.description}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section category-page-content">
+    <div class="container">
+      <div class="category-page-intro">
+        <h2>Toutes les notions</h2>
+        <p>Des explications courtes et concrètes, classées par ordre alphabétique.</p>
+      </div>
+      <div class="category-notion-list">
+        {notions.map((notion, index) => (
+          <a class="category-notion-item" href={path(`glossaire/${notion.id}/`)}>
+            <span class="category-notion-number">{String(index + 1).padStart(2, "0")}</span>
+            <span class="category-notion-copy">
+              <h2>{notion.data.title}</h2>
+              <p>{notion.data.summary}</p>
+              <span class="category-notion-formats">
+                {notion.data.audio && <span>Audio</span>}
+                {notion.data.infographic && <span>Infographie</span>}
+              </span>
+            </span>
+            <span class="category-notion-arrow"><Icon name="arrow" size={20} /></span>
+          </a>
+        ))}
+      </div>
+      <div class="category-page-footer">
+        <a class="button button-secondary" href={path("glossaire/")}>Parcourir tout le glossaire <Icon name="arrow" size={17} /></a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

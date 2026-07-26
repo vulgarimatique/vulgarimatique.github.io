@@ -34,6 +34,12 @@ const podcasts = [
 const categories = (await getCollection("categories"))
   .filter((category) => category.data.showHomepage)
   .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name, "fr"));
+const notionCountByCategory = new Map(
+  categories.map((category) => [
+    category.data.name,
+    notions.filter((notion) => notion.data.category === category.data.name).length
+  ])
+);
 ---
 
 <BaseLayout>
@@ -62,10 +68,12 @@ const categories = (await getCollection("categories"))
       <div class="featured-list">
         {featured.map((item, index) => (
           <a class="featured-item" href={path(`glossaire/${item.id}/`)}>
+            <span class="featured-index">0{index + 1}</span>
             <span class="icon-frame">
               <Icon name={index === 0 ? "kubernetes" : index === 1 ? "shield-lock" : "dns"} size={72} strokeWidth={1.35} />
             </span>
             <span class="featured-copy">
+              <span class="featured-meta">{item.data.category}</span>
               <h3>{item.data.title}</h3>
               <p>{item.data.summary}</p>
               <span class="text-link">Lire l’explication <Icon name="arrow" size={16} /></span>
@@ -76,18 +84,28 @@ const categories = (await getCollection("categories"))
     </div>
   </section>
 
-  <section class="section" id="categories">
+  <section class="section category-showcase" id="categories">
     <div class="container">
       <div class="section-heading">
-        <h2>Explorer par catégories</h2>
+        <div>
+          <h2>Explorer par catégories</h2>
+          <p class="section-intro">Choisissez votre terrain de jeu et avancez notion par notion.</p>
+        </div>
       </div>
       <div class="category-rail">
         {categories.map((category) => (
-          <a class="category-item" href={`${path("glossaire/")}?categorie=${encodeURIComponent(category.data.name)}`}>
-            <Icon name={category.data.icon} size={44} strokeWidth={1.35} />
-            <h3>{category.data.name}</h3>
-            <p>{category.data.description}</p>
-            <span class="category-arrow" aria-hidden="true">→</span>
+          <a class="category-item" href={path(`categories/${category.id}/`)}>
+            <span class="category-icon">
+              <Icon name={category.data.icon} size={42} strokeWidth={1.35} />
+            </span>
+            <span class="category-content">
+              <span class="category-count">
+                {notionCountByCategory.get(category.data.name) || 0} notion{(notionCountByCategory.get(category.data.name) || 0) > 1 ? "s" : ""}
+              </span>
+              <h3>{category.data.name}</h3>
+              <p>{category.data.description}</p>
+              <span class="category-link">Explorer la catégorie <Icon name="arrow" size={16} /></span>
+            </span>
           </a>
         ))}
       </div>
