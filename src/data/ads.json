@@ -1,7 +1,7 @@
 {
-  "enabled": false,
+  "enabled": true,
   "provider": "adsense",
-  "clientId": "",
+  "clientId": "pub-4480723880776093",
   "slots": {
     "glossaryAfter": 10,
     "glossarySlotId": "",
