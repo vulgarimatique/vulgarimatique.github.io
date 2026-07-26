@@ -1,0 +1,7 @@
+{
+  "name": "Réseau & web",
+  "description": "Internet, protocoles, adresse IP, DNS, HTTP…",
+  "icon": "globe",
+  "order": 1,
+  "showHomepage": true
+}

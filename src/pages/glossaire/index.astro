@@ -8,7 +8,9 @@ import ads from "../../data/ads.json";
 const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
 const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
 const notions = (await getCollection("notions")).sort((a, b) => a.data.title.localeCompare(b.data.title, "fr"));
-const categories = ["Toutes", ...new Set(notions.map((item) => item.data.category))];
+const categoryEntries = (await getCollection("categories"))
+  .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name, "fr"));
+const categories = ["Toutes", ...categoryEntries.map((category) => category.data.name)];
 const letters = [...new Set(notions.map((item) => item.data.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "")[0].toUpperCase()))];
 ---
 

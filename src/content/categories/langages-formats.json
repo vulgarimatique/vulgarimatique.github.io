@@ -1,0 +1,7 @@
+{
+  "name": "Langages & formats",
+  "description": "HTML, CSS, JavaScript et formats d’échange.",
+  "icon": "code",
+  "order": 7,
+  "showHomepage": false
+}

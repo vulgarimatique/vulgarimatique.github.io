@@ -31,15 +31,9 @@ const podcasts = [
     description: "Menaces, parades et bons réflexes au quotidien."
   }
 ].filter((podcast): podcast is typeof podcast & { item: NonNullable<typeof podcast.item> } => Boolean(podcast.item));
-
-const categories = [
-  { name: "Réseau & web", icon: "globe", text: "Internet, protocoles, adresse IP, DNS, HTTP…" },
-  { name: "Données & IA", icon: "database", text: "Données, bases, algorithmes et apprentissage." },
-  { name: "Sécurité", icon: "lock", text: "Chiffrement, attaques, authentification et réflexes." },
-  { name: "Développement & outils", icon: "code", text: "Langages, outils, méthodes et contrôle de version." },
-  { name: "Cloud, applis & architectures", icon: "cloud", text: "Services, architectures, conteneurs et déploiement." },
-  { name: "Matériel & systèmes", icon: "cpu", text: "Ordinateurs, systèmes, mémoire et composants." }
-] as const;
+const categories = (await getCollection("categories"))
+  .filter((category) => category.data.showHomepage)
+  .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name, "fr"));
 ---
 
 <BaseLayout>
@@ -89,10 +83,10 @@ const categories = [
       </div>
       <div class="category-rail">
         {categories.map((category) => (
-          <a class="category-item" href={`${path("glossaire/")}?categorie=${encodeURIComponent(category.name)}`}>
-            <Icon name={category.icon} size={44} strokeWidth={1.35} />
-            <h3>{category.name}</h3>
-            <p>{category.text}</p>
+          <a class="category-item" href={`${path("glossaire/")}?categorie=${encodeURIComponent(category.data.name)}`}>
+            <Icon name={category.data.icon} size={44} strokeWidth={1.35} />
+            <h3>{category.data.name}</h3>
+            <p>{category.data.description}</p>
             <span class="category-arrow" aria-hidden="true">→</span>
           </a>
         ))}

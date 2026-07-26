@@ -1,0 +1,7 @@
+{
+  "name": "Cloud, applis & architectures",
+  "description": "Services, architectures, conteneurs et déploiement.",
+  "icon": "cloud",
+  "order": 5,
+  "showHomepage": true
+}

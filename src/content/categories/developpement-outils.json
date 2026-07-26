@@ -1,0 +1,7 @@
+{
+  "name": "Développement & outils",
+  "description": "Langages, outils, méthodes et contrôle de version.",
+  "icon": "code",
+  "order": 4,
+  "showHomepage": true
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Matériel & systèmes",
+  "description": "Ordinateurs, systèmes, mémoire et composants.",
+  "icon": "cpu",
+  "order": 6,
+  "showHomepage": true
+}

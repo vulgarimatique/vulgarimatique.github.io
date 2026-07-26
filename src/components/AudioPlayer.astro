@@ -1,0 +1,96 @@
+---
+interface Props {
+  src: string;
+  title: string;
+  duration?: string;
+}
+
+const { src, title, duration = "0:00" } = Astro.props;
+---
+
+<div class="custom-audio-player" data-audio-player data-title={title}>
+  <audio preload="metadata" src={src}></audio>
+  <button class="audio-toggle" type="button" aria-label={`Lire l’explication audio : ${title}`}>
+    <svg class="audio-play-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m9 7 8 5-8 5z" fill="currentColor"></path>
+    </svg>
+    <svg class="audio-pause-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M8 6h3v12H8zm5 0h3v12h-3z" fill="currentColor"></path>
+    </svg>
+  </button>
+  <div class="audio-player-body">
+    <div class="audio-player-heading">
+      <span>Écouter la notion</span>
+      <span class="audio-time"><span data-current>0:00</span> / <span data-duration>{duration}</span></span>
+    </div>
+    <div class="audio-track-wrap">
+      <input class="audio-progress" type="range" min="0" max="100" value="0" step="0.1" aria-label={`Progression de l’audio : ${title}`} />
+      <span class="audio-track-fill" data-progress-fill></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const formatTime = (seconds: number) => {
+    if (!Number.isFinite(seconds)) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const remaining = Math.floor(seconds % 60).toString().padStart(2, "0");
+    return `${minutes}:${remaining}`;
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-audio-player]").forEach((player) => {
+    if (player.dataset.ready === "true") return;
+    player.dataset.ready = "true";
+
+    const audio = player.querySelector<HTMLAudioElement>("audio");
+    const toggle = player.querySelector<HTMLButtonElement>(".audio-toggle");
+    const progress = player.querySelector<HTMLInputElement>(".audio-progress");
+    const fill = player.querySelector<HTMLElement>("[data-progress-fill]");
+    const current = player.querySelector<HTMLElement>("[data-current]");
+    const duration = player.querySelector<HTMLElement>("[data-duration]");
+    if (!audio || !toggle || !progress || !fill || !current || !duration) return;
+    const audioTitle = player.dataset.title || "cette notion";
+
+    const updateProgress = () => {
+      const percentage = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+      progress.value = String(percentage);
+      fill.style.width = `${percentage}%`;
+      current.textContent = formatTime(audio.currentTime);
+    };
+
+    audio.addEventListener("loadedmetadata", () => {
+      duration.textContent = formatTime(audio.duration);
+    });
+    audio.addEventListener("timeupdate", updateProgress);
+    audio.addEventListener("play", () => {
+      player.classList.add("is-playing");
+      toggle.setAttribute("aria-label", `Mettre en pause l’explication audio : ${audioTitle}`);
+    });
+    audio.addEventListener("pause", () => {
+      player.classList.remove("is-playing");
+      toggle.setAttribute("aria-label", `Lire l’explication audio : ${audioTitle}`);
+    });
+    audio.addEventListener("ended", () => {
+      audio.currentTime = 0;
+      updateProgress();
+    });
+
+    toggle.addEventListener("click", () => {
+      if (audio.paused) {
+        document.querySelectorAll<HTMLAudioElement>("audio").forEach((other) => {
+          if (other !== audio) other.pause();
+        });
+        void audio.play().catch(() => {
+          player.classList.remove("is-playing");
+        });
+      } else {
+        audio.pause();
+      }
+    });
+
+    progress.addEventListener("input", () => {
+      if (audio.duration) audio.currentTime = (Number(progress.value) / 100) * audio.duration;
+      updateProgress();
+    });
+  });
+</script>

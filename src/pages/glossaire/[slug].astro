@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Icon from "../../components/Icon.astro";
 import AdSlot from "../../components/AdSlot.astro";
+import AudioPlayer from "../../components/AudioPlayer.astro";
 
 export async function getStaticPaths() {
   const notions = await getCollection("notions");
@@ -38,10 +39,11 @@ const jsonLd = {
           <p class="detail-lead">{entry.data.summary}</p>
           <div class="detail-actions">
             {entry.data.audio && (
-              <audio controls preload="metadata">
-                <source src={path(entry.data.audio.replace(/^\//, ""))} type="audio/mp4" />
-                Votre navigateur ne peut pas lire cet audio.
-              </audio>
+              <AudioPlayer
+                src={path(entry.data.audio.replace(/^\//, ""))}
+                title={entry.data.title}
+                duration={entry.data.audioDuration}
+              />
             )}
             {entry.data.infographic && (
               <a class="button button-secondary" href="#infographie"><Icon name="chart" size={18} /> Voir l’infographie</a>

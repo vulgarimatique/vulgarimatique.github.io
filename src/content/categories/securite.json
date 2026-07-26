@@ -1,0 +1,7 @@
+{
+  "name": "Sécurité",
+  "description": "Chiffrement, attaques, authentification et réflexes.",
+  "icon": "lock",
+  "order": 3,
+  "showHomepage": true
+}

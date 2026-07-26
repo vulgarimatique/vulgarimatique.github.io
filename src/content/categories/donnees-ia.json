@@ -1,0 +1,7 @@
+{
+  "name": "Données & IA",
+  "description": "Données, bases, algorithmes et apprentissage.",
+  "icon": "database",
+  "order": 2,
+  "showHomepage": true
+}

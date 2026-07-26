@@ -17,6 +17,32 @@ slug:
   sanitize_replacement: "-"
 
 collections:
+  - name: categories
+    label: Catégories
+    label_singular: Catégorie
+    folder: src/content/categories
+    create: true
+    extension: json
+    format: json
+    identifier_field: name
+    summary: "{{name}}"
+    sortable_fields: [order, name]
+    fields:
+      - { label: Nom, name: name, widget: string }
+      - { label: Description, name: description, widget: text, hint: "Texte court visible sur la page d’accueil." }
+      - label: Icône
+        name: icon
+        widget: select
+        options:
+          - { label: Globe, value: globe }
+          - { label: Base de données, value: database }
+          - { label: Cadenas, value: lock }
+          - { label: Code, value: code }
+          - { label: Cloud, value: cloud }
+          - { label: Processeur, value: cpu }
+      - { label: Ordre d’affichage, name: order, widget: number, value_type: int, min: 0 }
+      - { label: Afficher sur l’accueil, name: showHomepage, widget: boolean, default: true }
+
   - name: notions
     label: Notions
     label_singular: Notion
@@ -42,15 +68,11 @@ collections:
       - { label: Définition courte, name: summary, widget: text, hint: "L’analogie ou la définition visible dans les listes." }
       - label: Catégorie
         name: category
-        widget: select
-        options:
-          - Réseau & web
-          - Données & IA
-          - Sécurité
-          - Développement & outils
-          - Cloud, applis & architectures
-          - Matériel & systèmes
-          - Langages & formats
+        widget: relation
+        collection: categories
+        search_fields: [name]
+        value_field: name
+        display_fields: [name]
       - { label: Identifiant source, name: sourceId, widget: string, required: false }
       - { label: Mettre à la une, name: featured, widget: boolean, default: false }
       - { label: Date de publication, name: publishedAt, widget: datetime, time_format: false, format: "YYYY-MM-DD" }
