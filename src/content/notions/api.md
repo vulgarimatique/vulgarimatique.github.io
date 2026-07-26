@@ -12,7 +12,7 @@ audioDuration: 1:35
 ---
 ## En clair
 
-Une fenêtre de service où une appli dit “voici comment me demander quelque chose”.
+Une fenêtre de service où une appli dit “voici comment me demander quelque chose”. hehe
 
 Cette notion fait partie du vocabulaire courant de l’informatique. Le plus simple est de la retenir par son rôle : **API** décrit un outil, une règle ou un mécanisme qui aide les machines et les logiciels à fonctionner ensemble.
 
