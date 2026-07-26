@@ -24,7 +24,7 @@ const items = (await getCollection("notions"))
     <div class="container library-grid">
       {items.map((item) => (
         <a class="media-card" href={path(`glossaire/${item.id}/#infographie`)}>
-          <span class="media-card-image">
+          <span class:list={["media-card-image", `is-${item.data.infographicOrientation || "horizontal"}`]}>
             <img src={path(item.data.infographic!.replace(/^\//, ""))} alt={`Infographie : ${item.data.title}`} loading="lazy" />
           </span>
           <h2>{item.data.title}</h2>

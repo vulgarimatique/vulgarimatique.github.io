@@ -3,12 +3,14 @@ interface Props {
   src: string;
   title: string;
   duration?: string;
+  label?: string;
+  variant?: "default" | "compact";
 }
 
-const { src, title, duration = "0:00" } = Astro.props;
+const { src, title, duration = "0:00", label = "Écouter la notion", variant = "default" } = Astro.props;
 ---
 
-<div class="custom-audio-player" data-audio-player data-title={title}>
+<div class:list={["custom-audio-player", { "is-compact": variant === "compact" }]} data-audio-player data-title={title}>
   <audio preload="metadata" src={src}></audio>
   <button class="audio-toggle" type="button" aria-label={`Lire l’explication audio : ${title}`}>
     <svg class="audio-play-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -20,7 +22,7 @@ const { src, title, duration = "0:00" } = Astro.props;
   </button>
   <div class="audio-player-body">
     <div class="audio-player-heading">
-      <span>Écouter la notion</span>
+      <span>{label}</span>
       <span class="audio-time"><span data-current>0:00</span> / <span data-duration>{duration}</span></span>
     </div>
     <div class="audio-track-wrap">

@@ -2,12 +2,18 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Icon from "../../components/Icon.astro";
+import AudioPlayer from "../../components/AudioPlayer.astro";
 
 const base = `${import.meta.env.BASE_URL.replace(/\/?$/, "/")}`;
 const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
 const items = (await getCollection("notions"))
   .filter((item) => item.data.audio)
   .sort((a, b) => a.data.title.localeCompare(b.data.title, "fr"));
+const categoryEntries = (await getCollection("categories"))
+  .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name, "fr"));
+const usedCategories = new Set(items.map((item) => item.data.category));
+const categories = ["Toutes", ...categoryEntries.map((item) => item.data.name).filter((name) => usedCategories.has(name))];
+const pageSize = 8;
 ---
 
 <BaseLayout title="Podcasts" description="Des explications audio courtes pour comprendre l’informatique sans jargon.">
@@ -21,21 +27,149 @@ const items = (await getCollection("notions"))
     </div>
   </section>
   <section class="section section-rule">
-    <div class="container podcast-page-list">
-      {items.map((item) => (
-        <article class="podcast-card">
-          <div class="podcast-card-header">
-            <span class="play-button"><Icon name="play" size={18} /></span>
+    <div class="container">
+      <div class="podcast-library-tools">
+        <div class="podcast-search-wrap">
+          <Icon name="search" size={20} />
+          <label class="sr-only" for="podcast-search">Rechercher un podcast</label>
+          <input id="podcast-search" type="search" placeholder="Rechercher un épisode…" autocomplete="off" />
+        </div>
+        <div class="podcast-filter-rail" role="group" aria-label="Filtrer les podcasts par catégorie">
+          {categories.map((category, index) => (
+            <button
+              class:list={["podcast-filter", { active: index === 0 }]}
+              type="button"
+              data-category={category}
+              aria-pressed={index === 0 ? "true" : "false"}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="podcast-library-summary">
+        <p id="podcast-count" aria-live="polite">{items.length} épisodes</p>
+        <span>8 épisodes par page</span>
+      </div>
+
+      <div class="podcast-page-list" id="podcast-library">
+        {items.map((item, index) => (
+          <article
+            class="podcast-card"
+            data-podcast-card
+            data-category={item.data.category}
+            data-search={`${item.data.title} ${item.data.summary} ${item.data.category} ${item.data.aliases.join(" ")}`}
+            hidden={index >= pageSize}
+          >
+            <div class="podcast-card-topline">
+              <span>Épisode {String(index + 1).padStart(2, "0")}</span>
+              <span>{item.data.category}</span>
+            </div>
             <h2><a href={path(`glossaire/${item.id}/`)}>{item.data.title}</a></h2>
-            <span class="podcast-duration">{item.data.audioDuration}</span>
-          </div>
-          <p>{item.data.summary}</p>
-          <audio controls preload="none">
-            <source src={path(item.data.audio!.replace(/^\//, ""))} type="audio/mp4" />
-            Votre navigateur ne peut pas lire cet audio.
-          </audio>
-        </article>
-      ))}
+            <p>{item.data.summary}</p>
+            <AudioPlayer
+              src={path(item.data.audio!.replace(/^\//, ""))}
+              title={item.data.title}
+              duration={item.data.audioDuration}
+              label="Lancer l’épisode"
+              variant="compact"
+            />
+            <a class="podcast-card-link" href={path(`glossaire/${item.id}/`)}>
+              Lire l’explication <Icon name="arrow" size={15} />
+            </a>
+          </article>
+        ))}
+      </div>
+
+      <div class="podcast-empty" id="podcast-empty" hidden>
+        <Icon name="search" size={30} />
+        <h2>Aucun épisode trouvé</h2>
+        <p>Essayez un autre terme ou sélectionnez une autre catégorie.</p>
+      </div>
+
+      <nav class="podcast-pagination" id="podcast-pagination" aria-label="Pagination des podcasts"></nav>
     </div>
   </section>
+
+  <script>
+    const pageSize = 8;
+    const search = document.querySelector<HTMLInputElement>("#podcast-search");
+    const cards = [...document.querySelectorAll<HTMLElement>("[data-podcast-card]")];
+    const filters = [...document.querySelectorAll<HTMLButtonElement>(".podcast-filter")];
+    const count = document.querySelector<HTMLElement>("#podcast-count");
+    const empty = document.querySelector<HTMLElement>("#podcast-empty");
+    const pagination = document.querySelector<HTMLElement>("#podcast-pagination");
+    const tools = document.querySelector<HTMLElement>(".podcast-library-tools");
+    let activeCategory = "Toutes";
+    let currentPage = 1;
+
+    const normalize = (value: string) => value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLocaleLowerCase("fr");
+
+    const makePageButton = (label: string, page: number, disabled = false, current = false) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.disabled = disabled;
+      button.className = "pagination-button";
+      if (current) {
+        button.classList.add("active");
+        button.setAttribute("aria-current", "page");
+      }
+      button.addEventListener("click", () => {
+        currentPage = page;
+        update(false);
+        tools?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      return button;
+    };
+
+    const update = (resetPage = true) => {
+      if (resetPage) currentPage = 1;
+      const terms = normalize(search?.value.trim() || "").split(/\s+/).filter(Boolean);
+      const matches = cards.filter((card) => {
+        const haystack = normalize(card.dataset.search || "");
+        const matchesQuery = terms.length === 0 || terms.every((term) => haystack.includes(term));
+        const matchesCategory = activeCategory === "Toutes" || card.dataset.category === activeCategory;
+        return matchesQuery && matchesCategory;
+      });
+
+      const pageCount = Math.max(1, Math.ceil(matches.length / pageSize));
+      currentPage = Math.min(currentPage, pageCount);
+      const first = (currentPage - 1) * pageSize;
+      const visible = new Set(matches.slice(first, first + pageSize));
+
+      cards.forEach((card) => {
+        card.hidden = !visible.has(card);
+        if (card.hidden) card.querySelector<HTMLAudioElement>("audio")?.pause();
+      });
+
+      if (count) count.textContent = `${matches.length} épisode${matches.length > 1 ? "s" : ""}`;
+      if (empty) empty.hidden = matches.length !== 0;
+      if (!pagination) return;
+      pagination.replaceChildren();
+      if (pageCount <= 1) return;
+
+      pagination.append(makePageButton("Précédent", Math.max(1, currentPage - 1), currentPage === 1));
+      for (let page = 1; page <= pageCount; page += 1) {
+        pagination.append(makePageButton(String(page), page, false, page === currentPage));
+      }
+      pagination.append(makePageButton("Suivant", Math.min(pageCount, currentPage + 1), currentPage === pageCount));
+    };
+
+    search?.addEventListener("input", () => update());
+    filters.forEach((button) => button.addEventListener("click", () => {
+      activeCategory = button.dataset.category || "Toutes";
+      filters.forEach((filter) => {
+        const active = filter === button;
+        filter.classList.toggle("active", active);
+        filter.setAttribute("aria-pressed", String(active));
+      });
+      update();
+    }));
+    update();
+  </script>
 </BaseLayout>
