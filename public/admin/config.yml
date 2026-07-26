@@ -1,12 +1,12 @@
 locale: fr
 backend:
   name: github
-  repo: __GITHUB_REPOSITORY__
+  repo: vulgarimatique/vulgarimatique.github.io
   branch: main
-  base_url: __DECAP_OAUTH_URL__
+  base_url: https://vulgarimatique-oauth.julien-taverne.chatgpt.site
+  auth_endpoint: /auth
   squash_merges: true
 
-local_backend: true
 publish_mode: editorial_workflow
 media_folder: public/media/uploads
 public_folder: /media/uploads

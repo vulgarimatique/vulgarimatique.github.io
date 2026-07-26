@@ -2,6 +2,9 @@ node_modules/
 dist/
 .astro/
 .DS_Store
+
+# Relais OAuth déployé séparément (ses secrets ne vivent jamais dans ce dépôt).
+/.oauth-proxy/
 .env
 .env.*
 !.env.example
