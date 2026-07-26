@@ -1,13 +1,14 @@
 ---
-title: "API"
-summary: "Une fenêtre de service où une appli dit “voici comment me demander quelque chose”."
-category: "Développement & outils"
-sourceId: "C6LmQWF9p7Raic"
+title: API
+summary: Une fenêtre de service où une appli dit “voici comment me demander
+  quelque chose”.
+category: Développement & outils
+sourceId: C6LmQWF9p7Raic
 featured: false
-publishedAt: "2026-07-24"
+publishedAt: 2026-07-24
 aliases: []
-audio: "/media/audio/api.m4a"
-audioDuration: "1:35"
+audio: /media/audio/api.m4a
+audioDuration: 1:35
 ---
 ## En clair
 
