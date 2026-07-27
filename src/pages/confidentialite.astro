@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import site from "../data/site.json";
+---
+
+<BaseLayout title="Politique de confidentialité" description="Informations sur les données personnelles, les cookies et la publicité sur Vulgarimatique.">
+  <article class="container simple-page legal-page">
+    <p class="page-kicker">Vie privée</p>
+    <h1>Politique de confidentialité</h1>
+    <p class="simple-page-lead">Cette page explique quelles données peuvent être traitées lors de votre visite, pourquoi elles le sont et comment exercer vos droits.</p>
+
+    <section>
+      <h2>Responsable du traitement</h2>
+      <p>ALLIANCIA SOLUTIONS, SAS au capital de 1 500 €, dont le siège social est situé 5 rue de la Grenouillère, 68230 Turckheim, France.</p>
+      <p>Contact pour toute question relative à la vie privée : <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+    </section>
+
+    <section>
+      <h2>Données traitées et finalités</h2>
+      <div class="legal-table-wrap">
+        <table class="legal-table">
+          <thead><tr><th>Situation</th><th>Données concernées</th><th>Finalité et base légale</th></tr></thead>
+          <tbody>
+            <tr><td>Consultation du site</td><td>Données techniques et adresse IP susceptibles d’être enregistrées par GitHub Pages</td><td>Sécurité, prévention des abus et mise à disposition du site — intérêt légitime</td></tr>
+            <tr><td>Publicité</td><td>Identifiants en ligne, choix de consentement et données de navigation selon les options acceptées</td><td>Affichage et mesure des annonces Google AdSense — consentement lorsque celui-ci est requis</td></tr>
+            <tr><td>Newsletter</td><td>Adresse électronique saisie dans le message préparé par votre logiciel de messagerie</td><td>Répondre à votre demande d’inscription — consentement ; le site ne transmet ni ne stocke directement cette adresse</td></tr>
+            <tr><td>Contact direct</td><td>Adresse électronique et contenu du message que vous décidez d’envoyer</td><td>Répondre à votre demande — intérêt légitime ou mesures précontractuelles selon la nature du message</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cookies, publicité et consentement</h2>
+      <p>Vulgarimatique utilise Google AdSense pour financer une partie de ses contenus. Dans l’Espace économique européen, au Royaume-Uni et en Suisse, la plate-forme de gestion du consentement de Google présente les choix « Autoriser », « Ne pas consentir » et « Gérer les options » avant l’utilisation des traceurs soumis à consentement.</p>
+      <p>Vous pouvez modifier ou retirer votre consentement à tout moment au moyen du lien ou de l’icône de gestion des options de confidentialité fourni par Google sur le site. Le refus n’empêche pas l’accès aux contenus.</p>
+      <p>Pour comprendre comment Google utilise les informations provenant des sites partenaires, consultez la page <a href="https://policies.google.com/technologies/partner-sites?hl=fr" rel="external">Utilisation des données par Google</a>.</p>
+    </section>
+
+    <section>
+      <h2>Destinataires, hébergement et transferts</h2>
+      <p>Les données peuvent être traitées par GitHub pour l’hébergement et la sécurité du site, et par Google lorsque les services publicitaires ou la gestion du consentement sont utilisés. Ces prestataires peuvent traiter des données hors de l’Espace économique européen selon les garanties et mécanismes décrits dans leurs politiques respectives.</p>
+      <ul>
+        <li><a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement" rel="external">Déclaration de confidentialité de GitHub</a></li>
+        <li><a href="https://policies.google.com/privacy?hl=fr" rel="external">Règles de confidentialité de Google</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Durées de conservation</h2>
+      <p>ALLIANCIA SOLUTIONS conserve les messages reçus uniquement pendant la durée nécessaire à leur traitement et au suivi utile de la relation. Les durées appliquées aux journaux techniques, identifiants publicitaires et choix de consentement relèvent également des politiques de GitHub et de Google accessibles ci-dessus.</p>
+    </section>
+
+    <section>
+      <h2>Vos droits</h2>
+      <p>Selon le traitement concerné, vous pouvez demander l’accès, la rectification, l’effacement ou la limitation de vos données, vous opposer à un traitement, demander la portabilité des données applicables et retirer votre consentement à tout moment.</p>
+      <p>Adressez votre demande à <a href={`mailto:${site.email}`}>{site.email}</a>. Une preuve d’identité pourra être demandée uniquement si elle est nécessaire pour éviter une divulgation à un tiers. Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr/" rel="external">CNIL</a>.</p>
+    </section>
+
+    <p class="legal-updated">Dernière mise à jour : 27 juillet 2026.</p>
+  </article>
+</BaseLayout>

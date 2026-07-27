@@ -1,14 +1,62 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import site from "../data/site.json";
 ---
 
-<BaseLayout title="Mentions légales" noindex={true}>
-  <article class="container simple-page">
+<BaseLayout title="Mentions légales" description="Mentions légales, informations sur l’éditeur et l’hébergement de Vulgarimatique.">
+  <article class="container simple-page legal-page">
+    <p class="page-kicker">Informations légales</p>
     <h1>Mentions légales</h1>
-    <p>Cette page doit être complétée avant la mise en production avec l’identité de l’éditeur, ses coordonnées, le responsable de publication, l’hébergeur et les informations de contact obligatoires.</p>
-    <h2>Hébergement</h2>
-    <p>Le site est destiné à être hébergé par GitHub Pages. Les médias pourront être distribués depuis le même hébergement ou depuis un service de stockage configuré ultérieurement.</p>
-    <h2>Publicité et mesure d’audience</h2>
-    <p>Si des services publicitaires ou de mesure d’audience sont activés, leurs finalités, fournisseurs et modalités de consentement devront être décrits ici et dans une politique de confidentialité dédiée.</p>
+    <p class="simple-page-lead">Les présentes mentions identifient l’éditeur, le responsable de publication et le prestataire qui assure l’hébergement de vulgarimatique.fr.</p>
+
+    <section aria-labelledby="legal-editor">
+      <h2 id="legal-editor">Éditeur du site</h2>
+      <dl class="legal-details">
+        <div><dt>Dénomination</dt><dd>ALLIANCIA SOLUTIONS</dd></div>
+        <div><dt>Forme juridique</dt><dd>SAS — société par actions simplifiée</dd></div>
+        <div><dt>Capital social</dt><dd>1 500 €</dd></div>
+        <div><dt>Siège social</dt><dd>5 rue de la Grenouillère, 68230 Turckheim, France</dd></div>
+        <div><dt>SIREN</dt><dd>942 137 837</dd></div>
+        <div><dt>SIRET du siège</dt><dd>942 137 837 00012</dd></div>
+        <div><dt>Immatriculation</dt><dd>RCS Colmar 942 137 837</dd></div>
+        <div><dt>TVA intracommunautaire</dt><dd>FR72 942137837</dd></div>
+        <div><dt>Courriel</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+        {site.phone && <div><dt>Téléphone</dt><dd><a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a></dd></div>}
+      </dl>
+    </section>
+
+    <section aria-labelledby="legal-director">
+      <h2 id="legal-director">Direction de la publication</h2>
+      <p>Directeur de la publication et responsable de la rédaction : <strong>Julien Taverne</strong>, président d’ALLIANCIA SOLUTIONS.</p>
+    </section>
+
+    <section aria-labelledby="legal-host">
+      <h2 id="legal-host">Hébergement</h2>
+      <p>Le site est hébergé par <strong>GitHub, Inc.</strong>, 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.</p>
+      <ul>
+        <li>Site : <a href="https://github.com/" rel="external">github.com</a></li>
+        <li>Assistance : <a href="https://support.github.com/" rel="external">support.github.com</a></li>
+        <li>Téléphone commercial : +1 877 448 4820</li>
+      </ul>
+      <p>GitHub Pages publie les fichiers statiques du dépôt associé à Vulgarimatique. GitHub indique notamment enregistrer l’adresse IP des visiteurs à des fins de sécurité.</p>
+    </section>
+
+    <section aria-labelledby="legal-rights">
+      <h2 id="legal-rights">Propriété intellectuelle</h2>
+      <p>Sauf indication contraire, la structure du site, les textes, illustrations, infographies, éléments graphiques et contenus audio publiés sur Vulgarimatique sont protégés par le droit de la propriété intellectuelle. Toute reproduction, adaptation ou diffusion au-delà des exceptions légales nécessite l’autorisation préalable de l’éditeur.</p>
+      <p>Les marques, noms de produits et logos éventuellement cités appartiennent à leurs titulaires respectifs. Leur mention a une finalité exclusivement pédagogique ou informative.</p>
+    </section>
+
+    <section aria-labelledby="legal-liability">
+      <h2 id="legal-liability">Responsabilité et liens externes</h2>
+      <p>Les contenus sont préparés avec soin et régulièrement mis à jour, mais ils sont fournis à titre informatif et pédagogique. Ils ne remplacent pas un conseil professionnel adapté à une situation particulière. L’éditeur ne peut garantir l’exactitude permanente des informations publiées ni la disponibilité des sites externes proposés en lien.</p>
+    </section>
+
+    <section aria-labelledby="legal-data">
+      <h2 id="legal-data">Données personnelles et publicité</h2>
+      <p>Les informations relatives aux traitements de données, à Google AdSense, aux cookies et à l’exercice de vos droits figurent dans notre <a href="/confidentialite/">politique de confidentialité</a>. Le consentement publicitaire est recueilli au moyen de la plate-forme de gestion du consentement de Google.</p>
+    </section>
+
+    <p class="legal-updated">Dernière mise à jour : 27 juillet 2026.</p>
   </article>
 </BaseLayout>

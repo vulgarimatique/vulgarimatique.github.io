@@ -22,13 +22,14 @@ const path = (value = "") => `${base}${value}`.replace(/\/+/g, "/");
     <div>
       <h2>À propos</h2>
       <a href={path("a-propos/")}>Qui sommes-nous ?</a>
-      <a href={path("a-propos/")}>Notre approche</a>
+      <a href={path("notre-approche/")}>Notre approche</a>
       <a href={path("mentions-legales/")}>Mentions légales</a>
     </div>
     <div>
       <h2>Ressources</h2>
       <a href={path()}>Plan du site</a>
       <a href={path("accessibilite/")}>Accessibilité</a>
+      <a href={path("confidentialite/")}>Confidentialité</a>
       <a href={path("rss.xml")} class="inline-link">Flux RSS <Icon name="rss" size={15} /></a>
     </div>
     <div>
