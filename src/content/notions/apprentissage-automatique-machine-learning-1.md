@@ -1,5 +1,5 @@
 ---
-title: Apprentissage automatique (Machine Learning)
+title: Machine Learning (Apprentissage automatique)
 summary: Apprendre à l’ordi à reconnaître des modèles, comme toi qui apprends à
   reconnaître des chiens sur des photos.
 category: Données & IA
