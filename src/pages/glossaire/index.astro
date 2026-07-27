@@ -59,7 +59,7 @@ const letters = [...new Set(notions.map((item) => letterFor(item.data.title)))];
           <a
             class="glossary-row"
             href={path(`glossaire/${item.id}/`)}
-            data-title={`${item.data.title} ${item.data.aliases.join(" ")}`.toLocaleLowerCase("fr")}
+            data-search={`${item.data.title} ${item.data.aliases.join(" ")} ${item.data.summary} ${item.data.category}`}
             data-category={item.data.category}
             id={index === 0 || letterFor(notions[index - 1].data.title) !== letterFor(item.data.title) ? `lettre-${letterFor(item.data.title)}` : undefined}
           >
@@ -82,18 +82,26 @@ const letters = [...new Set(notions.map((item) => letterFor(item.data.title)))];
     const rows = [...document.querySelectorAll<HTMLElement>(".glossary-row")];
     const filters = [...document.querySelectorAll<HTMLButtonElement>(".filter-button")];
     const empty = document.querySelector<HTMLElement>("#glossary-empty");
+    const adSlots = [...document.querySelectorAll<HTMLElement>("#glossary-list > .ad-slot")];
     let activeCategory = "Toutes";
 
     const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr");
     const update = () => {
       const query = normalize(search?.value || "");
+      const terms = query.split(/\s+/).filter(Boolean);
       let visible = 0;
       rows.forEach((row) => {
-        const title = normalize(row.dataset.title || "");
+        const searchableText = normalize(row.dataset.search || "");
+        const words = searchableText.split(/[^a-z0-9]+/).filter(Boolean);
         const category = row.dataset.category || "";
-        const show = (!query || title.includes(query)) && (activeCategory === "Toutes" || category === activeCategory);
+        const matchesSearch = terms.length === 0 || terms.every((term) => words.some((word) => word.startsWith(term)));
+        const show = matchesSearch && (activeCategory === "Toutes" || category === activeCategory);
         row.hidden = !show;
         if (show) visible += 1;
+      });
+      const filtering = Boolean(query) || activeCategory !== "Toutes";
+      adSlots.forEach((slot) => {
+        slot.hidden = filtering;
       });
       empty?.classList.toggle("visible", visible === 0);
     };

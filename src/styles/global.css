@@ -1255,6 +1255,11 @@ h4,
   transition: background 160ms ease;
 }
 
+.glossary-row[hidden],
+.glossary-table > .ad-slot[hidden] {
+  display: none;
+}
+
 .glossary-row[id] {
   scroll-margin-top: 168px;
 }
