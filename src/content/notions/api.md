@@ -9,6 +9,7 @@ publishedAt: 2026-07-24
 aliases: []
 audio: /media/audio/api.m4a
 audioDuration: 1:35
+infographic: /media/infographics/chatgpt-image-2-aou-t-2026-a-22_56_27.png
 ---
 ## En clair
 
